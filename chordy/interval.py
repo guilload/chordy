@@ -1,19 +1,4 @@
-from operator import le, lt
-
-
 class Interval(object):
-    """
-    >>> 1 in Interval(0, 2)
-    True
-    >>> 0 in Interval(0, 2)
-    True
-    >>> 0 in Interval(0, 2, lexclude=True)
-    False
-    >>> 2 in Interval(0, 2, rexclude=True)
-    False
-    >>> 0 in Interval(5, 2)
-    True
-    """
 
     def __init__(self, start, end, lexclude=False, rexclude=False):
         self.start = start
@@ -21,16 +6,36 @@ class Interval(object):
         self.lexclude = lexclude
         self.rexclude = rexclude
 
-    def operators(self, swap=False):
-        if swap:
-            return (le if self.lexclude else lt, le if self.rexclude else lt)
-        else:
-            return (lt if self.lexclude else le, lt if self.rexclude else le)
-
     def __contains__(self, value):
-        if self.start < self.end:
-            left, right = self.operators()
-            return left(self.start, value) and right(value, self.end)
-        else:
-            left, right = self.operators(swap=True)
-            return not (left(value, self.start) and right(self.end, value))
+        if self.lexclude and self.rexclude:  # ()
+            if self.start == self.end:
+                res = value != self.start
+
+            elif self.start < self.end:
+                res = self.start < value and value < self.end
+
+            else:
+                res = value > self.start or value < self.end
+
+        elif self.start == self.end:
+            res = True
+
+        elif not self.lexclude and not self.rexclude:  # []
+            if self.start < self.end:
+                res = self.start <= value and value <= self.end
+            else:
+                res = value >= self.start or value <= self.end
+
+        elif self.lexclude and not self.rexclude:  # (]
+            if self.start < self.end:
+                res = self.start < value and value <= self.end
+            else:
+                res = value > self.start or value <= self.end
+
+        else:  # [)
+            if self.start < self.end:
+                res = self.start <= value and value < self.end
+            else:
+                res = value >= self.start or value < self.end
+
+        return res
