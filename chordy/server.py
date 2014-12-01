@@ -34,6 +34,7 @@ class Server(Base):
 
             for finger in self.fingers:
                 finger.node = self
+
         self.run()
 
     def run(self):
@@ -59,6 +60,7 @@ class Server(Base):
                 continue
 
             conn.sendall(self.encode(res))
+            conn.close()
 
     def init_fingers(self, seed):
         self.successor = seed.find_successor(self.fingers[0].start)

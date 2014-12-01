@@ -1,6 +1,8 @@
 import hashlib
 import json
 
+from .constants import K
+
 
 class Encoder(json.JSONEncoder):
 
@@ -34,7 +36,7 @@ class Base(object):
 
     @staticmethod
     def hsh(key):
-        return int(hashlib.sha1(key).hexdigest(), 16) % 8
+        return int(hashlib.sha1(key).hexdigest(), 16) % K
 
     def decode(self, data):
         obj = json.loads(data)
