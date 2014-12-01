@@ -76,12 +76,14 @@ class Server(Base):
 
     def update_others(self):
         for i in range(m):
-            node = self.find_predecessor((self.uid - 2**i) % K)
+            node = self.find_predecessor((self.uid - 2**i + 1) % K)
             node.update_fingers(self, i)
 
     def update_fingers(self, node, i):
-        if node.uid in Interval(self.uid, self.fingers[i].node.uid, rexclude=True):
-            self.fingers[i].node = node
+        finger = self.fingers[i]
+
+        if node.uid in Interval(finger.start, finger.node.uid, rexclude=True):
+            finger.node = node
             self.predecessor.update_fingers(node, i)
 
     def update_predecessor(self, node):
